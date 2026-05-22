@@ -1,0 +1,33 @@
+# Variables can be defined at the top of the file
+@baseUrl = https://typicode.com
+
+### Get all recipes
+GET {{baseUrl}}/recipes
+Accept: application/json
+
+### Create a new recipe
+POST {{baseUrl}}/recipes
+Content-Type: application/json
+
+{
+    "title": "Spaghetti Carbonara",
+    "ingredients": ["spaghetti", "eggs", "bacon", "parmesan"],
+    "prepTimeMinutes": 20,
+    "difficulty": "Medium",
+    "isVegetarian": false
+}
+
+### Update a recipe's details
+PUT {{baseUrl}}/recipes/1
+Content-Type: application/json
+
+{
+    "title": "Spaghetti Carbonara",
+    "ingredients": ["spaghetti", "eggs", "bacon", "parmesan"],
+    "prepTimeMinutes": 25,
+    "difficulty": "Medium",
+    "isVegetarian": false
+}
+
+### Delete a recipe
+DELETE {{baseUrl}}/recipes/1

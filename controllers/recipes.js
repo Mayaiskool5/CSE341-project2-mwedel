@@ -48,15 +48,63 @@ const createRecipe = async(req, res) => {
     }
 };
 
-// PUT Update Recipe (Placehodler for swagger design-first requirements)
-const updateRecipe = async(req, res) => {
-    res.status(204).json({ message: "Recipe update placeholder success" });
+// PUT Update Recipe
+const updateRecipe = async (req, res) => {
+  try {
+    // 1. Convert the URL string ID into a MongoDB ObjectId
+    const recipeId = new ObjectId(req.params.id);
+    
+    // 2. Structure the updated data payload
+    const updatedRecipe = {
+      title: req.body.title,
+      ingredients: req.body.ingredients, // Array of strings
+      prepTimeMinutes: parseInt(req.body.prepTimeMinutes),
+      difficulty: req.body.difficulty,
+      isVegetarian: req.body.isVegetarian === true || req.body.isVegetarian === 'true'
+    };
+
+    // 3. Update the document matching the target _id
+    const response = await dbConnection
+      .getDb()
+      .db()
+      .collection('recipes')
+      .replaceOne({ _id: recipeId }, updatedRecipe);
+
+    // 4. Send appropriate HTTP status codes based on database outcome
+    if (response.modifiedCount > 0) {
+      // 244 No Content is standard for successful updates with no return body
+      res.status(204).send(); 
+    } else {
+      res.status(404).json({ message: 'Recipe not found or no changes made.' });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
+// DELETE Delete Recipe
+const deleteRecipe = async (req, res) => {
+  try {
+    // 1. Convert the URL string ID into a MongoDB ObjectId
+    const recipeId = new ObjectId(req.params.id);
 
-// DELETE Delete Recipe (Placehodler for swagger design-first requirements)
-const deleteRecipe = async(req, res) => {
-    res.status(200).json({ message: "Recipe delete placeholder success" });
+    // 2. Execute the removal query matching the target _id
+    const response = await dbConnection
+      .getDb()
+      .db()
+      .collection('recipes')
+      .deleteOne({ _id: recipeId });
+
+    // 3. Send appropriate HTTP status codes based on database outcome
+    if (response.deletedCount > 0) {
+      // 200 OK along with a confirmation message
+      res.status(200).json({ message: 'Recipe successfully deleted from the database.' });
+    } else {
+      res.status(404).json({ message: 'Recipe not found. Nothing was deleted.' });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
 module.exports = {
