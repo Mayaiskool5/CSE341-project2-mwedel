@@ -2,8 +2,8 @@ const swaggerAutogen = require('swagger-autogen')();
 
 const doc = {
   info: {
-    title: 'CSE 341 Project 2 API',
-    description: 'API Documentation displaying full CRUD pathways.'
+    title: 'Recipe & Meal Planner API',
+    description: 'CSE 341 Assignment 2: CRUD operations for recipes.'
   },
   host: '', // Left blank to dynamically adapt to local and production (Render) environments
   schemes: ['http', 'https']

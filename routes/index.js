@@ -1,6 +1,6 @@
 const router = require('express').Router();
 
-router.use('/items', require('./items'));
+router.use('/recipes', require('./recipes'));
 router.use('/', require('./swagger' ));
 
 module.exports = router;
