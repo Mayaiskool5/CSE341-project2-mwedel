@@ -17,12 +17,14 @@ const getAll = async(req, res) => {
 // Get single recipe by ID
 const getSingle = async(req, res) => {
     try {
-        const itemId = new ObjectId(req.params.id);
+        const recipeId = new ObjectId(req.params.id);
         const result = await dbConnection.getDb().collection('recipes').findOne({ _id: recipeId });
-        result.toArray().then((lists) => {
-            res.setHeader('Content-Type', 'application/json');
-            res.status(200).json(lists[0] || { message: 'Recipe not found' });
-        });
+        res.setHeader('Content-Type', 'application/json');
+        if (result) {
+            res.status(200).json(result);
+        } else {
+            res.status(404).json({ message: 'Recipe not found' });
+        }
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
