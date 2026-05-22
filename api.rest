@@ -1,5 +1,5 @@
 # Variables can be defined at the top of the file
-@baseUrl = https://typicode.com
+@baseUrl = https://cse341-project2-mwedel.onrender.com/api-docs/
 
 ### Get all recipes
 GET {{baseUrl}}/recipes
