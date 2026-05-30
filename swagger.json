@@ -59,6 +59,25 @@
           "201": {
             "description": "Created"
           },
+          "422": {
+            "description": "Validation Error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": { "type": "boolean" },
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "field": { "type": "string" },
+                      "message": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal Server Error"
           }
@@ -106,35 +125,38 @@
             "schema": {
               "type": "object",
               "properties": {
-                "title": {
-                  "example": "any"
-                },
-                "ingredients": {
-                  "example": "any"
-                },
-                "prepTimeMinutes": {
-                  "example": "any"
-                },
-                "difficulty": {
-                  "example": "any"
-                },
-                "isVegetarian": {
-                  "example": "any"
-                }
+                "title": { "example": "any" },
+                "ingredients": { "example": "any" },
+                "prepTimeMinutes": { "example": "any" },
+                "difficulty": { "example": "any" },
+                "isVegetarian": { "example": "any" }
               }
             }
           }
         ],
         "responses": {
-          "204": {
-            "description": "No Content"
+          "204": { "description": "No Content" },
+          "422": {
+            "description": "Validation Error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": { "type": "boolean" },
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "field": { "type": "string" },
+                      "message": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
           },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
+          "404": { "description": "Not Found" },
+          "500": { "description": "Internal Server Error" }
         }
       },
       "delete": {

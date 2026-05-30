@@ -29,51 +29,43 @@ const getSingle = async(req, res) => {
 };
 // POST Create a new recipe
 const createRecipe = async(req, res) => {
-    try {
-        const recipe = {
-            title: req.body.title,
-            ingredients: req.body.ingredients, // Array of strings
-            prepTimeMinutes: parseInt(req.body.prepTimeMinutes),
-            difficulty: req.body.difficulty,
-            isVegetarian: req.body.isVegetarian === true || req.body.isVegetarian === 'true'
-        };
-        const response = await dbConnection.getDb().collection('recipes').insertOne(recipe);
-        if (response.acknowledged) {
-            res.status(201).json(response);
-        } else {
-            res.status(500).json({ message: 'Failed to create recipe' });
-        }
-    } catch (err) {
-        res.status(500).json({ message: err.message });
+  try {
+    const recipe = {
+      title: req.body.title,
+      ingredients: req.body.ingredients,
+      prepTimeMinutes: parseInt(req.body.prepTimeMinutes),
+      difficulty: req.body.difficulty,
+      isVegetarian: req.body.isVegetarian === true || req.body.isVegetarian === 'true'
+    };
+    const response = await dbConnection.getDb().collection('recipes').insertOne(recipe);
+    if (response.acknowledged) {
+      res.status(201).json(response);
+    } else {
+      res.status(500).json({ message: 'Failed to create recipe' });
     }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
 // PUT Update Recipe
 const updateRecipe = async (req, res) => {
   try {
-    // 1. Convert the URL string ID into a MongoDB ObjectId
     const recipeId = new ObjectId(req.params.id);
-    
-    // 2. Structure the updated data payload
     const updatedRecipe = {
       title: req.body.title,
-      ingredients: req.body.ingredients, // Array of strings
+      ingredients: req.body.ingredients,
       prepTimeMinutes: parseInt(req.body.prepTimeMinutes),
       difficulty: req.body.difficulty,
       isVegetarian: req.body.isVegetarian === true || req.body.isVegetarian === 'true'
     };
-
-    // 3. Update the document matching the target _id
     const response = await dbConnection
       .getDb()
       .db()
       .collection('recipes')
       .replaceOne({ _id: recipeId }, updatedRecipe);
-
-    // 4. Send appropriate HTTP status codes based on database outcome
     if (response.modifiedCount > 0) {
-      // 244 No Content is standard for successful updates with no return body
-      res.status(204).send(); 
+      res.status(204).send();
     } else {
       res.status(404).json({ message: 'Recipe not found or no changes made.' });
     }
