@@ -30,9 +30,13 @@ const getSingle = async(req, res) => {
 // POST Create a new recipe
 const createRecipe = async(req, res) => {
   try {
+    let ingredients = req.body.ingredients;
+    if (typeof ingredients === 'string') {
+      ingredients = ingredients.split(',').map(s => s.trim()).filter(Boolean);
+    }
     const recipe = {
       title: req.body.title,
-      ingredients: req.body.ingredients,
+      ingredients,
       prepTimeMinutes: parseInt(req.body.prepTimeMinutes),
       difficulty: req.body.difficulty,
       isVegetarian: req.body.isVegetarian === true || req.body.isVegetarian === 'true'
@@ -52,9 +56,13 @@ const createRecipe = async(req, res) => {
 const updateRecipe = async (req, res) => {
   try {
     const recipeId = new ObjectId(req.params.id);
+    let ingredients = req.body.ingredients;
+    if (typeof ingredients === 'string') {
+      ingredients = ingredients.split(',').map(s => s.trim()).filter(Boolean);
+    }
     const updatedRecipe = {
       title: req.body.title,
-      ingredients: req.body.ingredients,
+      ingredients,
       prepTimeMinutes: parseInt(req.body.prepTimeMinutes),
       difficulty: req.body.difficulty,
       isVegetarian: req.body.isVegetarian === true || req.body.isVegetarian === 'true'
