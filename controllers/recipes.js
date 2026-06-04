@@ -69,7 +69,6 @@ const updateRecipe = async (req, res) => {
     };
     const response = await dbConnection
       .getDb()
-      .db()
       .collection('recipes')
       .replaceOne({ _id: recipeId }, updatedRecipe);
     if (response.modifiedCount > 0) {
@@ -91,7 +90,6 @@ const deleteRecipe = async (req, res) => {
     // 2. Execute the removal query matching the target _id
     const response = await dbConnection
       .getDb()
-      .db()
       .collection('recipes')
       .deleteOne({ _id: recipeId });
 
