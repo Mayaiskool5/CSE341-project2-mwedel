@@ -11,7 +11,7 @@ const getSwaggerDocument = () => {
 
     // Dynamically update the host and scheme based on your environment
     if (process.env.NODE_ENV === 'production') {
-      doc.host = '://onrender.com';
+      doc.host = 'cse341-project2-mwedel.onrender.com';
       doc.schemes = ['https'];
     } else {
       // Fallback defaults for your local machine if they aren't already set
