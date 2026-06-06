@@ -5,9 +5,21 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const passport = require('passport');
 const { graphqlHTTP } = require('express-graphql');
+const fs = require('fs');
+const path = require('path');
 const dbClient = require('./config/db');
 const initializePassport = require('./config/passport');
 const { schema, root } = require('./graphql/schema');
+
+// Generate swagger.json with correct environment variables
+const generateSwaggerJson = () => {
+  const swaggerConfigPath = path.join(__dirname, 'swagger-config.js');
+  delete require.cache[require.resolve(swaggerConfigPath)];
+  require(swaggerConfigPath);
+};
+
+// Generate on startup
+generateSwaggerJson();
 
 const app = express();
 const PORT = process.env.PORT || 8080;
