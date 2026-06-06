@@ -9,10 +9,14 @@ const normalizeIngredients = ingredients => {
 
 const getAll = async (req, res) => {
   try {
-    const result = await dbConnection.getDb().collection('recipes').find().toArray();
+    console.log('GET /recipes called');
+    const db = dbConnection.getDb();
+    const result = await db.collection('recipes').find().toArray();
+    console.log(`Retrieved ${result.length} recipes`);
     res.setHeader('Content-Type', 'application/json');
     res.status(200).json(result);
   } catch (err) {
+    console.error('Error fetching recipes:', err);
     res.status(500).json({ message: err.message });
   }
 };
