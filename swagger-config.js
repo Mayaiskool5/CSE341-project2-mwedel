@@ -7,9 +7,9 @@ const doc = {
     description: 'GraphQL API for recipes and users, plus OAuth authentication flows.',
     version: '1.0.0'
   },
-  host: '',
+  host: process.env.SWAGGER_HOST || 'cse341-project2-mwedel.onrender.com',
   basePath: '/',
-  schemes: ['http', 'https'],
+  schemes: process.env.NODE_ENV === 'production' ? ['https'] : ['http', 'https'],
   paths: {
     '/recipes': {
       get: {

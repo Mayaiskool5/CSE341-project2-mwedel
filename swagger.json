@@ -5,7 +5,7 @@
     "description": "GraphQL API for recipes and users, plus OAuth authentication flows.",
     "version": "1.0.0"
   },
-  "host": "",
+  "host": "cse341-project2-mwedel.onrender.com",
   "basePath": "/",
   "schemes": [
     "http",
