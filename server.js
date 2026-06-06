@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const passport = require('passport');
 const { graphqlHTTP } = require('express-graphql');
 const dbClient = require('./config/db');
@@ -18,6 +19,15 @@ app.use(session({
     secret: process.env.SESSION_SECRET || 'legos_rule',
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017',
+        dbName: process.env.DB_NAME || 'cse341_project2',
+        collectionName: 'sessions',
+        ttl: 24 * 60 * 60,
+        crypto: {
+            secret: process.env.SESSION_SECRET || 'legos_rule'
+        }
+    }),
     cookie: {
         maxAge: 24 * 60 * 60 * 1000
     }
@@ -65,7 +75,12 @@ const startServer = () => {
             console.error('Failed to connect to MongoDB', err);
             process.exit(1);
         }
-        initializePassport();
+        try {
+            initializePassport();
+        } catch (initErr) {
+            console.error('Failed to initialize Passport', initErr);
+            process.exit(1);
+        }
         app.listen(PORT, () => {
             console.log(`Server is running on port ${PORT}`);
         });
