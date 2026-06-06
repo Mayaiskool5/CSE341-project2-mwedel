@@ -1,7 +1,5 @@
 const { body, validationResult } = require('express-validator');
 
-
-// Validation rules for recipes
 const recipeValidationRules = () => {
   return [
     body('title').trim().notEmpty().withMessage('Title is required.'),
@@ -26,13 +24,26 @@ const recipeValidationRules = () => {
   ];
 };
 
+const userValidationRules = () => {
+  return [
+    body('displayName').trim().notEmpty().withMessage('Display name is required.'),
+    body('email').isEmail().withMessage('A valid email is required.'),
+    body('provider').trim().notEmpty().withMessage('Provider is required.'),
+    body('role')
+      .optional()
+      .isIn(['user', 'admin'])
+      .withMessage('Role must be either user or admin.'),
+    body('picture').optional().isString().withMessage('Picture must be a URL string.'),
+    body('providerId').optional().isString().withMessage('Provider ID must be a string.')
+  ];
+};
+
 const validate = (req, res, next) => {
   const errors = validationResult(req);
   if (errors.isEmpty()) {
     return next();
   }
-  
-  // Error handling integration
+
   return res.status(422).json({
     success: false,
     errors: errors.array().map(err => ({ field: err.path, message: err.msg }))
@@ -41,5 +52,6 @@ const validate = (req, res, next) => {
 
 module.exports = {
   recipeValidationRules,
+  userValidationRules,
   validate
 };

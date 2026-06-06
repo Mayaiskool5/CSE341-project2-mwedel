@@ -1,8 +1,8 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Recipe & Meal Planner API",
-    "description": "CSE 341 Assignment 2: CRUD operations for recipes.",
+    "title": "Recipe & Meal Planner GraphQL API",
+    "description": "GraphQL API for recipes and users, plus OAuth authentication flows.",
     "version": "1.0.0"
   },
   "host": "",
@@ -12,183 +12,123 @@
     "https"
   ],
   "paths": {
-    "/recipes/": {
-      "get": {
-        "description": "",
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
+    "/graphql": {
       "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "title": {
-                  "example": "any"
-                },
-                "ingredients": {
-                  "example": "any"
-                },
-                "prepTimeMinutes": {
-                  "example": "any"
-                },
-                "difficulty": {
-                  "example": "any"
-                },
-                "isVegetarian": {
-                  "example": "any"
-                }
-              }
-            }
-          }
+        "summary": "Execute GraphQL operations",
+        "description": "Submit a GraphQL query or mutation to the API. Use GraphiQL for interactive exploration in non-production environments.",
+        "consumes": [
+          "application/json"
         ],
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "422": {
-            "description": "Validation Error",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "success": { "type": "boolean" },
-                "errors": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "field": { "type": "string" },
-                      "message": { "type": "string" }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/recipes/{id}": {
-      "get": {
-        "description": "",
         "produces": [
           "application/json"
         ],
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
-      "put": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
+            "name": "payload",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
-                "title": { "example": "any" },
-                "ingredients": { "example": "any" },
-                "prepTimeMinutes": { "example": "any" },
-                "difficulty": { "example": "any" },
-                "isVegetarian": { "example": "any" }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "204": { "description": "No Content" },
-          "422": {
-            "description": "Validation Error",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "success": { "type": "boolean" },
-                "errors": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "field": { "type": "string" },
-                      "message": { "type": "string" }
-                    }
-                  }
+                "query": {
+                  "type": "string",
+                  "example": "query { recipes { _id title category difficulty } }"
+                },
+                "variables": {
+                  "type": "object"
                 }
               }
             }
-          },
-          "404": { "description": "Not Found" },
-          "500": { "description": "Internal Server Error" }
-        }
-      },
-      "delete": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "GraphQL response object."
           },
-          "404": {
-            "description": "Not Found"
+          "400": {
+            "description": "Bad request or invalid GraphQL syntax."
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error."
           }
         }
       }
     },
-    "/api-docs": {
+    "/auth/google": {
       "get": {
-        "description": "",
+        "summary": "Start Google OAuth login",
+        "description": "Redirects the client to Google for OAuth authentication.",
         "responses": {
-          "default": {
-            "description": ""
+          "302": {
+            "description": "Redirect to Google login."
           }
+        }
+      }
+    },
+    "/auth/google/callback": {
+      "get": {
+        "summary": "Google OAuth callback",
+        "description": "Handles Google OAuth callback and signs the user in.",
+        "responses": {
+          "200": {
+            "description": "Login successful."
+          },
+          "401": {
+            "description": "Authentication failed."
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "get": {
+        "summary": "Logout current user",
+        "description": "Ends the authenticated session.",
+        "responses": {
+          "200": {
+            "description": "Logout successful."
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "summary": "Get current user",
+        "description": "Returns the currently authenticated OAuth user.",
+        "responses": {
+          "200": {
+            "description": "Authenticated user object."
+          },
+          "401": {
+            "description": "Authentication required."
+          }
+        }
+      }
+    },
+    "/status": {
+      "get": {
+        "summary": "API status",
+        "description": "Returns a simple health check response.",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "API is healthy."
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "GraphQLRequest": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "example": "query { recipes { _id title } }"
+        },
+        "variables": {
+          "type": "object"
         }
       }
     }
