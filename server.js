@@ -34,8 +34,7 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use('/auth', require('./routes/auth'));
-app.use('/', require('./routes/swagger'));
+app.use('/', require('./routes/index'));
 
 app.use('/graphql', graphqlHTTP(req => ({
     schema,

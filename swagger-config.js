@@ -11,6 +11,124 @@ const doc = {
   basePath: '/',
   schemes: ['http', 'https'],
   paths: {
+    '/recipes': {
+      get: {
+        summary: 'Get all recipes',
+        description: 'Retrieve a list of all recipes.',
+        produces: ['application/json'],
+        responses: {
+          '200': { description: 'List of recipes.' },
+          '500': { description: 'Internal server error.' }
+        }
+      },
+      post: {
+        summary: 'Create a new recipe',
+        description: 'Add a new recipe to the database.',
+        consumes: ['application/json'],
+        produces: ['application/json'],
+        parameters: [
+          {
+            name: 'body',
+            in: 'body',
+            required: true,
+            schema: {
+              type: 'object',
+              properties: {
+                title: { type: 'string', example: 'Pasta Carbonara' },
+                description: { type: 'string', example: 'Classic Italian pasta' },
+                category: { type: 'string', example: 'Italian' },
+                difficulty: { type: 'string', example: 'Medium' },
+                ingredients: { type: 'array', items: { type: 'string' } },
+                instructions: { type: 'string' }
+              },
+              required: ['title', 'description', 'category', 'difficulty', 'ingredients', 'instructions']
+            }
+          }
+        ],
+        responses: {
+          '201': { description: 'Recipe created successfully.' },
+          '400': { description: 'Validation error.' },
+          '500': { description: 'Internal server error.' }
+        }
+      }
+    },
+    '/recipes/{id}': {
+      get: {
+        summary: 'Get a single recipe',
+        description: 'Retrieve a recipe by ID.',
+        produces: ['application/json'],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            type: 'string',
+            description: 'Recipe ID'
+          }
+        ],
+        responses: {
+          '200': { description: 'Recipe details.' },
+          '404': { description: 'Recipe not found.' },
+          '500': { description: 'Internal server error.' }
+        }
+      },
+      put: {
+        summary: 'Update a recipe',
+        description: 'Update an existing recipe by ID.',
+        consumes: ['application/json'],
+        produces: ['application/json'],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            type: 'string',
+            description: 'Recipe ID'
+          },
+          {
+            name: 'body',
+            in: 'body',
+            required: true,
+            schema: {
+              type: 'object',
+              properties: {
+                title: { type: 'string' },
+                description: { type: 'string' },
+                category: { type: 'string' },
+                difficulty: { type: 'string' },
+                ingredients: { type: 'array', items: { type: 'string' } },
+                instructions: { type: 'string' }
+              }
+            }
+          }
+        ],
+        responses: {
+          '200': { description: 'Recipe updated successfully.' },
+          '400': { description: 'Validation error.' },
+          '404': { description: 'Recipe not found.' },
+          '500': { description: 'Internal server error.' }
+        }
+      },
+      delete: {
+        summary: 'Delete a recipe',
+        description: 'Delete a recipe by ID.',
+        produces: ['application/json'],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            type: 'string',
+            description: 'Recipe ID'
+          }
+        ],
+        responses: {
+          '200': { description: 'Recipe deleted successfully.' },
+          '404': { description: 'Recipe not found.' },
+          '500': { description: 'Internal server error.' }
+        }
+      }
+    },
     '/graphql': {
       post: {
         summary: 'Execute GraphQL operations',
