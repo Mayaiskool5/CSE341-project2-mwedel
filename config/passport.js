@@ -18,9 +18,15 @@ const initializePassport = () => {
     }
   });
 
+  const googleClientID = process.env.GOOGLE_CLIENT_ID;
+  const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  if (!googleClientID || !googleClientSecret) {
+    throw new Error('Missing GOOGLE_CLIENT_ID and/or GOOGLE_CLIENT_SECRET environment variables.');
+  }
+
   passport.use(new GoogleStrategy({
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientID: googleClientID,
+      clientSecret: googleClientSecret,
       callbackURL: `${process.env.BASE_URL || 'http://localhost:8080'}/auth/google/callback`
     },
     async (accessToken, refreshToken, profile, done) => {
