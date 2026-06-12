@@ -1,11 +1,17 @@
 const dbConnection = require('../config/db');
 const { ObjectId } = require('mongodb');
 
+const sanitizeUser = user => {
+  if (!user) return null;
+  const { passwordHash, ...rest } = user;
+  return rest;
+};
+
 const getUsers = async (req, res) => {
   try {
     const result = await dbConnection.getDb().collection('users').find().toArray();
     res.setHeader('Content-Type', 'application/json');
-    res.status(200).json(result);
+    res.status(200).json(result.map(sanitizeUser));
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -16,7 +22,7 @@ const getUser = async (req, res) => {
     const userId = new ObjectId(req.params.id);
     const result = await dbConnection.getDb().collection('users').findOne({ _id: userId });
     if (result) {
-      res.status(200).json(result);
+      res.status(200).json(sanitizeUser(result));
     } else {
       res.status(404).json({ message: 'User not found.' });
     }

@@ -132,11 +132,13 @@ const root = {
   },
 
   users: async (source, args, context) => {
+    ensureAuthenticated(context);
     const users = await context.db.collection('users').find().toArray();
     return users.map(toJsonObject);
   },
 
   user: async (source, { id }, context) => {
+    ensureAuthenticated(context);
     const user = await context.db.collection('users').findOne({ _id: new ObjectId(id) });
     return toJsonObject(user);
   },

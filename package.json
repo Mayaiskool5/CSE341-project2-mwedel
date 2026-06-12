@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/Mayaiskool5/CSE341-project2-mwedel#readme",
   "dependencies": {
+    "bcrypt": "^5.1.0",
     "connect-mongo": "^4.6.0",
     "cors": "^2.8.6",
     "dotenv": "^16.0.0",
@@ -33,6 +34,7 @@
     "mongodb": "^4.4.0",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
+    "passport-local": "^1.0.0",
     "swagger-ui-express": "^4.3.0"
   },
   "devDependencies": {

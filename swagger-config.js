@@ -10,6 +10,23 @@ const doc = {
   host: process.env.SWAGGER_HOST || 'cse341-project2-mwedel.onrender.com',
   basePath: '/',
   schemes: process.env.NODE_ENV === 'production' ? ['https'] : ['http', 'https'],
+  securityDefinitions: {
+    cookieAuth: {
+      type: 'apiKey',
+      in: 'cookie',
+      name: 'connect.sid',
+      description: 'Session cookie for authenticated routes.'
+    },
+    googleOAuth: {
+      type: 'oauth2',
+      authorizationUrl: 'https://accounts.google.com/o/oauth2/auth',
+      flow: 'implicit',
+      scopes: {
+        profile: 'Access user profile information',
+        email: 'Access user email address'
+      }
+    }
+  },
   paths: {
     '/recipes': {
       get: {
@@ -23,7 +40,8 @@ const doc = {
       },
       post: {
         summary: 'Create a new recipe',
-        description: 'Add a new recipe to the database.',
+        description: 'Add a new recipe to the database. Requires authentication via session cookie.',
+        security: [{ cookieAuth: [] }],
         consumes: ['application/json'],
         produces: ['application/json'],
         parameters: [
@@ -74,7 +92,8 @@ const doc = {
       },
       put: {
         summary: 'Update a recipe',
-        description: 'Update an existing recipe by ID.',
+        description: 'Update an existing recipe by ID. Requires authentication via session cookie.',
+        security: [{ cookieAuth: [] }],
         consumes: ['application/json'],
         produces: ['application/json'],
         parameters: [
@@ -111,7 +130,8 @@ const doc = {
       },
       delete: {
         summary: 'Delete a recipe',
-        description: 'Delete a recipe by ID.',
+        description: 'Delete a recipe by ID. Requires authentication via session cookie.',
+        security: [{ cookieAuth: [] }],
         produces: ['application/json'],
         parameters: [
           {
@@ -132,7 +152,8 @@ const doc = {
     '/graphql': {
       post: {
         summary: 'Execute GraphQL operations',
-        description: 'Submit a GraphQL query or mutation to the API. Use GraphiQL for interactive exploration in non-production environments.',
+        description: 'Submit a GraphQL query or mutation to the API. Mutations that change data require authentication via session cookie.',
+        security: [{ cookieAuth: [] }],
         consumes: ['application/json'],
         produces: ['application/json'],
         parameters: [
@@ -180,6 +201,62 @@ const doc = {
         }
       }
     },
+    '/auth/login': {
+      post: {
+        summary: 'Local login',
+        description: 'Authenticate using email and password. Stores a session cookie on success.',
+        consumes: ['application/json'],
+        produces: ['application/json'],
+        parameters: [
+          {
+            name: 'body',
+            in: 'body',
+            required: true,
+            schema: {
+              type: 'object',
+              properties: {
+                email: { type: 'string', example: 'student@example.com' },
+                password: { type: 'string', example: 'securePass123' }
+              },
+              required: ['email', 'password']
+            }
+          }
+        ],
+        responses: {
+          '200': { description: 'Login successful.' },
+          '401': { description: 'Authentication failed.' }
+        }
+      }
+    },
+    '/auth/register': {
+      post: {
+        summary: 'Local user registration',
+        description: 'Create a new local account with hashed password storage.',
+        consumes: ['application/json'],
+        produces: ['application/json'],
+        parameters: [
+          {
+            name: 'body',
+            in: 'body',
+            required: true,
+            schema: {
+              type: 'object',
+              properties: {
+                displayName: { type: 'string', example: 'Maya Wedel' },
+                email: { type: 'string', example: 'student@example.com' },
+                password: { type: 'string', example: 'securePass123' }
+              },
+              required: ['displayName', 'email', 'password']
+            }
+          }
+        ],
+        responses: {
+          '201': { description: 'Account created successfully.' },
+          '409': { description: 'Email already registered.' },
+          '422': { description: 'Validation failed.' }
+        }
+      }
+    },
     '/auth/logout': {
       get: {
         summary: 'Logout current user',
@@ -192,10 +269,136 @@ const doc = {
     '/auth/me': {
       get: {
         summary: 'Get current user',
-        description: 'Returns the currently authenticated OAuth user.',
+        description: 'Returns the currently authenticated user via session cookie.',
+        security: [{ cookieAuth: [] }],
         responses: {
           '200': { description: 'Authenticated user object.' },
           '401': { description: 'Authentication required.' }
+        }
+      }
+    },
+    '/users': {
+      get: {
+        summary: 'Get all users',
+        description: 'Returns all registered users. Requires authentication.',
+        security: [{ cookieAuth: [] }],
+        produces: ['application/json'],
+        responses: {
+          '200': { description: 'List of users.' },
+          '401': { description: 'Authentication required.' },
+          '500': { description: 'Internal server error.' }
+        }
+      },
+      post: {
+        summary: 'Create a new user',
+        description: 'Create a new user record. Requires authentication.',
+        security: [{ cookieAuth: [] }],
+        consumes: ['application/json'],
+        produces: ['application/json'],
+        parameters: [
+          {
+            name: 'body',
+            in: 'body',
+            required: true,
+            schema: {
+              type: 'object',
+              properties: {
+                displayName: { type: 'string' },
+                email: { type: 'string' },
+                provider: { type: 'string' },
+                providerId: { type: 'string' },
+                role: { type: 'string' },
+                picture: { type: 'string' }
+              }
+            }
+          }
+        ],
+        responses: {
+          '201': { description: 'User created successfully.' },
+          '401': { description: 'Authentication required.' },
+          '500': { description: 'Internal server error.' }
+        }
+      }
+    },
+    '/users/{id}': {
+      get: {
+        summary: 'Get a user by ID',
+        description: 'Returns a user by ID. Requires authentication.',
+        security: [{ cookieAuth: [] }],
+        produces: ['application/json'],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            type: 'string',
+            description: 'User ID'
+          }
+        ],
+        responses: {
+          '200': { description: 'User details.' },
+          '401': { description: 'Authentication required.' },
+          '404': { description: 'User not found.' },
+          '500': { description: 'Internal server error.' }
+        }
+      },
+      put: {
+        summary: 'Update a user',
+        description: 'Update a user record by ID. Requires authentication.',
+        security: [{ cookieAuth: [] }],
+        consumes: ['application/json'],
+        produces: ['application/json'],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            type: 'string',
+            description: 'User ID'
+          },
+          {
+            name: 'body',
+            in: 'body',
+            required: true,
+            schema: {
+              type: 'object',
+              properties: {
+                displayName: { type: 'string' },
+                email: { type: 'string' },
+                provider: { type: 'string' },
+                providerId: { type: 'string' },
+                role: { type: 'string' },
+                picture: { type: 'string' }
+              }
+            }
+          }
+        ],
+        responses: {
+          '200': { description: 'User updated successfully.' },
+          '401': { description: 'Authentication required.' },
+          '404': { description: 'User not found.' },
+          '500': { description: 'Internal server error.' }
+        }
+      },
+      delete: {
+        summary: 'Delete a user',
+        description: 'Delete a user by ID. Requires authentication.',
+        security: [{ cookieAuth: [] }],
+        produces: ['application/json'],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            type: 'string',
+            description: 'User ID'
+          }
+        ],
+        responses: {
+          '200': { description: 'User deleted successfully.' },
+          '401': { description: 'Authentication required.' },
+          '404': { description: 'User not found.' },
+          '500': { description: 'Internal server error.' }
         }
       }
     },

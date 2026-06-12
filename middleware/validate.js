@@ -34,7 +34,23 @@ const userValidationRules = () => {
       .isIn(['user', 'admin'])
       .withMessage('Role must be either user or admin.'),
     body('picture').optional().isString().withMessage('Picture must be a URL string.'),
-    body('providerId').optional().isString().withMessage('Provider ID must be a string.')
+    body('providerId').optional().isString().withMessage('Provider ID must be a string.'),
+    body('password').optional().isLength({ min: 8 }).withMessage('Password must be at least 8 characters.')
+  ];
+};
+
+const registrationValidationRules = () => {
+  return [
+    body('displayName').trim().notEmpty().withMessage('Display name is required.'),
+    body('email').isEmail().withMessage('A valid email is required.'),
+    body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters.')
+  ];
+};
+
+const loginValidationRules = () => {
+  return [
+    body('email').isEmail().withMessage('A valid email is required.'),
+    body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters.')
   ];
 };
 
@@ -53,5 +69,7 @@ const validate = (req, res, next) => {
 module.exports = {
   recipeValidationRules,
   userValidationRules,
+  registrationValidationRules,
+  loginValidationRules,
   validate
 };
